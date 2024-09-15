@@ -1,0 +1,6 @@
+{
+  "name": "Tibber P1 Meter",
+  "render_readme": true,
+  "domains": ["sensor"],
+  "iot_class": "Local Push"
+}

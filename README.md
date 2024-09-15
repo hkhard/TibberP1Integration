@@ -2,36 +2,29 @@
 
 This project integrates the ESP8266 P1 meter with Tibber API via a Home Assistant custom component.
 
-## Setup Instructions
-
-1. Create a new GitHub repository:
-   - Go to https://github.com/new
-   - Repository name: TibberP1Integration
-   - Description: ESP8266 P1 meter integration to update Tibber API via Home Assistant custom component
-   - Choose "Public" or "Private" based on your preference
-   - Initialize this repository with a README (uncheck this option)
-   - Click "Create repository"
-
-2. After creating the repository, you'll see a page with instructions. Look for the section "…or push an existing repository from the command line" and copy the commands provided.
-
-3. Run the following commands in your local project directory:
-   ```
-   git remote set-url origin https://github.com/hkhard/TibberP1Integration.git
-   git branch -M main
-   git push -u origin main
-   ```
-
-4. Refresh your GitHub repository page to see the uploaded files.
-
-## Project Structure
-
-- `esp8266_p1_meter/`: Contains the Arduino sketch for the ESP8266
-- `custom_components/tibber_p1_meter/`: Home Assistant custom component
-- `configuration.yaml`: Example Home Assistant configuration
-
 ## Installation
 
-Refer to the documentation in the `custom_components/tibber_p1_meter/` directory for installation instructions.
+### HACS (Recommended)
+
+1. Ensure that [HACS](https://hacs.xyz/) is installed.
+2. Search for "Tibber P1 Meter" in the HACS "Integrations" tab.
+3. Click Install.
+4. Restart Home Assistant.
+
+### Manual Installation
+
+1. Copy the `custom_components/tibber_p1_meter` directory to your Home Assistant's `custom_components` directory.
+2. Restart Home Assistant.
+
+## Configuration
+
+1. In the Home Assistant UI, go to "Configuration" -> "Integrations" -> "Add Integration".
+2. Search for "Tibber P1 Meter" and select it.
+3. Follow the configuration steps to enter your Tibber API access token.
+
+## ESP8266 Setup
+
+Refer to the `esp8266_p1_meter/` directory for the Arduino sketch and setup instructions for the ESP8266 device.
 
 ## Contributing
 

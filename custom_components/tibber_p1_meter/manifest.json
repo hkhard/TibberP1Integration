@@ -1,10 +1,12 @@
 {
   "domain": "tibber_p1_meter",
   "name": "Tibber P1 Meter",
-  "documentation": "https://github.com/your_repo/tibber_p1_meter",
+  "documentation": "https://github.com/hkhard/TibberP1Integration",
+  "issue_tracker": "https://github.com/hkhard/TibberP1Integration/issues",
   "dependencies": ["mqtt", "tibber"],
-  "codeowners": ["@your_github_username"],
+  "codeowners": ["@hkhard"],
   "requirements": [],
   "iot_class": "local_push",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "config_flow": true
 }
