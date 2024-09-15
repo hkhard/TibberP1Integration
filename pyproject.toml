@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "tibber_p1_integration"
+version = "0.1.0"
+description = "Tibber P1 Meter Integration for Home Assistant"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+homeassistant = "^2024.9.1"
+paho-mqtt = "^2.1.0"
+tibber = "^0.16.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

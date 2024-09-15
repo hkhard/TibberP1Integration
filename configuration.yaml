@@ -1,0 +1,13 @@
+# Tibber P1 Meter Configuration
+tibber_p1_meter:
+
+mqtt:
+  sensor:
+    - name: "P1 Meter Power Usage"
+      state_topic: "p1meter/energy_usage"
+      unit_of_measurement: "W"
+      value_template: "{{ value | float }}"
+
+# Ensure Tibber integration is set up
+tibber:
+  access_token: !secret tibber_access_token
