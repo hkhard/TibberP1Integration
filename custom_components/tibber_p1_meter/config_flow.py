@@ -1,7 +1,9 @@
+
 """Config flow for Tibber P1 Meter integration."""
 from __future__ import annotations
 
 import logging
+import re
 from typing import Any
 
 import voluptuous as vol
@@ -13,6 +15,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
 from tibber import Tibber
+from tibber.exceptions import TibberAPIError, TibberConnectionError
 
 from .const import DOMAIN
 
@@ -20,7 +23,11 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_ACCESS_TOKEN): cv.string,
+        vol.Required(CONF_ACCESS_TOKEN): vol.All(
+            cv.string,
+            vol.Length(min=32, max=32),
+            msg="Invalid access token format"
+        ),
     }
 )
 
@@ -28,13 +35,14 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     """Validate the user input allows us to connect."""
     tibber = Tibber(access_token=data[CONF_ACCESS_TOKEN])
     try:
-        await tibber.update_info()
+        await hass.async_add_executor_job(tibber.update_info)
         homes = tibber.get_homes()
         if not homes:
             raise NoHomesError
-    except Exception as error:
-        _LOGGER.error("Error connecting to Tibber API: %s", error)
+    except TibberConnectionError as error:
         raise CannotConnect from error
+    except TibberAPIError as error:
+        raise InvalidAuth from error
 
     return {"title": f"Tibber P1 Meter ({homes[0].address1})"}
 
@@ -53,6 +61,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 info = await validate_input(self.hass, user_input)
             except CannotConnect:
                 errors["base"] = "cannot_connect"
+            except InvalidAuth:
+                errors["base"] = "invalid_auth"
             except NoHomesError:
                 errors["base"] = "no_homes"
             except Exception:  # pylint: disable=broad-except
@@ -72,6 +82,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 class CannotConnect(HomeAssistantError):
     """Error to indicate we cannot connect."""
+
+class InvalidAuth(HomeAssistantError):
+    """Error to indicate there is invalid auth."""
 
 class NoHomesError(HomeAssistantError):
     """Error to indicate no homes are available."""

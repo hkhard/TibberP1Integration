@@ -1,5 +1,9 @@
+
 """Support for Tibber P1 Meter sensors."""
 from __future__ import annotations
+
+import logging
+from asyncio import Lock
 
 from homeassistant.components import mqtt
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
@@ -12,6 +16,8 @@ from tibber import Tibber
 from tibber.subscription_manager import DEFAULT_TIMEOUT
 
 from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -35,6 +41,7 @@ class TibberP1MeterSensor(SensorEntity):
         self.config_entry = config_entry
         self._attr_unique_id = f"{config_entry.entry_id}_power_usage"
         self.tibber_connection = tibber_connection
+        self._update_lock = Lock()
 
     async def async_added_to_hass(self) -> None:
         """Subscribe to MQTT events."""
@@ -46,12 +53,17 @@ class TibberP1MeterSensor(SensorEntity):
     def _mqtt_message_received(self, message):
         """Handle received MQTT message."""
         try:
-            self._attr_native_value = float(message.payload)
-            self.async_write_ha_state()
-            self.hass.async_create_task(self._update_tibber())
+            value = float(message.payload)
+            self.hass.async_create_task(self._async_update_state(value))
         except ValueError:
-            self._attr_native_value = None
+            _LOGGER.error("Invalid payload received: %s", message.payload)
+
+    async def _async_update_state(self, value):
+        """Update state and Tibber in a non-blocking way."""
+        async with self._update_lock:
+            self._attr_native_value = value
             self.async_write_ha_state()
+            await self._update_tibber()
 
     async def _update_tibber(self) -> None:
         """Update Tibber with the latest power usage data."""
@@ -61,4 +73,4 @@ class TibberP1MeterSensor(SensorEntity):
                 await home.update_price_info()
                 await home.send_power_consumption(self._attr_native_value, DEFAULT_TIMEOUT)
             except Exception as e:
-                _LOGGER.error(f"Error updating Tibber: {e}")
+                _LOGGER.error("Error updating Tibber: %s", str(e), exc_info=True)
