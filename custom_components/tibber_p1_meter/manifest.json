@@ -2,11 +2,10 @@
   "domain": "tibber_p1_meter",
   "name": "Tibber P1 Meter",
   "documentation": "https://github.com/hkhard/TibberP1Integration",
-  "issue_tracker": "https://github.com/hkhard/TibberP1Integration/issues",
-  "dependencies": ["tibber"],
+  "dependencies": [],
   "codeowners": ["@hkhard"],
-  "requirements": [],
+  "requirements": ["tibber"],
   "iot_class": "cloud_push",
-  "version": "0.3.0",
+  "version": "0.1.0",
   "config_flow": true
 }
