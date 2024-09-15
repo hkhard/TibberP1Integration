@@ -1,0 +1,21 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Connect to Tibber",
+                "description": "Please enter your Tibber API access token. You can find it at {tibber_url}",
+                "data": {
+                    "access_token": "Access Token"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to Tibber API. Please check your access token and try again.",
+            "no_homes": "No homes found in your Tibber account. Please make sure you have at least one home registered.",
+            "unknown": "An unexpected error occurred. Please try again later."
+        },
+        "abort": {
+            "already_configured": "This Tibber account is already configured."
+        }
+    }
+}
