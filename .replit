@@ -31,6 +31,14 @@ args = "Check GitHub Token and Push"
 task = "workflow.run"
 args = "Verify and Push to GitHub"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Create GitHub Repository"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Push to GitHub"
+
 [[workflows.workflow]]
 name = "Start Home Assistant"
 author = "agent"
@@ -122,6 +130,39 @@ if [ -n \"$GITHUB_TOKEN\" ]; then
 else
   echo \"GitHub token is not set\"
 fi
+"""
+
+[[workflows.workflow]]
+name = "Create GitHub Repository"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+curl -H \"Authorization: token ${GITHUB_TOKEN}\"      -d '{\"name\": \"TibberP1Integration\", \"description\": \"ESP8266 P1 meter integration to update Tibber API via Home Assistant custom component\", \"private\": false}'      https://api.github.com/user/repos
+"""
+
+[[workflows.workflow]]
+name = "Push to GitHub"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+git config --global user.email \"tibber.p1.integration@example.com\"
+git config --global user.name \"Tibber P1 Integration\"
+git remote set-url origin https://${GITHUB_TOKEN}@github.com/hkhard/TibberP1Integration.git
+git add .
+git commit -m \"Initial commit: Add project files\"
+git push -u origin main
 """
 
 [deployment]
