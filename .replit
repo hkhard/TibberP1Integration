@@ -15,6 +15,10 @@ author = "agent"
 task = "workflow.run"
 args = "Start Home Assistant"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Publish to GitHub"
+
 [[workflows.workflow]]
 name = "Start Home Assistant"
 author = "agent"
@@ -26,6 +30,23 @@ agentRequireRestartOnSave = false
 task = "shell.exec"
 args = "hass -c . --debug"
 waitForPort = 8123
+
+[[workflows.workflow]]
+name = "Publish to GitHub"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+git remote set-url origin https://${GITHUB_TOKEN}@github.com/hkhard/TibberP1Integration.git
+git add .
+git commit -m \"Initial commit: Add project files\"
+git push -u origin main
+"""
 
 [deployment]
 run = ["sh", "-c", "hass -c . --debug"]
