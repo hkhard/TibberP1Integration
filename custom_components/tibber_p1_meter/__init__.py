@@ -10,12 +10,12 @@ from homeassistant.const import CONF_ACCESS_TOKEN, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from tibber import Tibber
 
-from .const import DOMAIN
+from .const import DOMAIN, SCAN_INTERVAL
 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
-SCAN_INTERVAL = timedelta(minutes=5)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,33 +33,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception as err:
         raise ConfigEntryNotReady from err
 
-    hass.data[DOMAIN][entry.entry_id] = tibber_connection
+    coordinator = TibberP1MeterCoordinator(hass, tibber_connection)
+    await coordinator.async_config_entry_first_refresh()
+
+    hass.data[DOMAIN][entry.entry_id] = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-
-    async def update_tibber_data(now):
-        """Fetch data from P1 meter and update Tibber."""
-        # TODO: Implement fetching data from P1 meter
-        # For now, we'll use dummy data
-        dummy_data = {
-            "power": 1000,
-            "powerProduction": 0,
-            "accumulatedConsumption": 5000,
-            "accumulatedProduction": 0,
-            "accumulatedCost": 10,
-            "currency": "EUR"
-        }
-
-        try:
-            await tibber_connection.send_rt_update(dummy_data)
-            _LOGGER.info("Successfully sent data to Tibber API")
-        except Exception as err:
-            _LOGGER.error("Failed to send data to Tibber API: %s", err)
-
-    # Schedule periodic updates
-    hass.helpers.event.async_track_time_interval(
-        update_tibber_data, SCAN_INTERVAL
-    )
 
     return True
 
@@ -69,3 +48,40 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+class TibberP1MeterCoordinator(DataUpdateCoordinator):
+    """Class to manage fetching P1 meter data."""
+
+    def __init__(self, hass: HomeAssistant, tibber_connection: Tibber):
+        """Initialize."""
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=DOMAIN,
+            update_interval=SCAN_INTERVAL,
+        )
+        self.tibber_connection = tibber_connection
+
+    async def _async_update_data(self):
+        """Fetch data from P1 meter and update Tibber."""
+        try:
+            # TODO: Implement actual P1 meter data fetching
+            # For now, we'll use dummy data
+            p1_data = await self.hass.async_add_executor_job(self._fetch_p1_meter_data)
+            
+            await self.tibber_connection.send_rt_update(p1_data)
+            return p1_data
+        except Exception as err:
+            raise UpdateFailed(f"Error communicating with P1 meter or Tibber API: {err}")
+
+    def _fetch_p1_meter_data(self):
+        """Fetch data from P1 meter (dummy implementation)."""
+        # TODO: Replace this with actual P1 meter data fetching
+        return {
+            "power": 1000,
+            "powerProduction": 0,
+            "accumulatedConsumption": 5000,
+            "accumulatedProduction": 0,
+            "accumulatedCost": 10,
+            "currency": "EUR"
+        }

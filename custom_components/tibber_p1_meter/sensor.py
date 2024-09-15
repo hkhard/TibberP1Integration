@@ -15,12 +15,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import StateType
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
+from . import TibberP1MeterCoordinator
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the Tibber P1 Meter sensor."""
@@ -34,7 +32,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 class TibberP1Sensor(CoordinatorEntity, SensorEntity):
     """Base class for Tibber P1 Meter sensors."""
 
-    def __init__(self, coordinator: DataUpdateCoordinator) -> None:
+    def __init__(self, coordinator: TibberP1MeterCoordinator) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator)
         self._attr_unique_id = f"{DOMAIN}_{self.entity_description.key}"
