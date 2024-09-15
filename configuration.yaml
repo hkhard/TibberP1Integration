@@ -1,7 +1,13 @@
 # Tibber P1 Meter Configuration
 tibber_p1_meter:
 
+# MQTT Configuration
 mqtt:
+  broker: YOUR_MQTT_BROKER_IP
+  port: 1883
+  username: YOUR_MQTT_USERNAME
+  password: YOUR_MQTT_PASSWORD
+
   sensor:
     - name: "P1 Meter Power Usage"
       state_topic: "p1meter/energy_usage"

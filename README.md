@@ -1,6 +1,12 @@
 # Tibber P1 Meter Integration for Home Assistant
 
-This project integrates the ESP8266 P1 meter with Tibber API via a Home Assistant custom component.
+This project integrates a P1 meter with Tibber API via a Home Assistant custom component.
+
+## Prerequisites
+
+- A compatible P1 meter
+- MQTT broker set up and configured in Home Assistant
+- Tibber account with API access
 
 ## Installation
 
@@ -40,10 +46,6 @@ If you prefer to install the integration manually:
 3. Follow the configuration steps to enter your Tibber API access token.
    - You can obtain your Tibber API access token from the [Tibber Developer Portal](https://developer.tibber.com/).
 
-## ESP8266 Setup
-
-Refer to the `esp8266_p1_meter/` directory in this repository for the Arduino sketch and detailed setup instructions for the ESP8266 device.
-
 ## Usage
 
 After installation and configuration, the Tibber P1 Meter integration will create a sensor entity in Home Assistant. You can use this entity in your automations, scripts, or Lovelace UI to monitor and control your energy usage.
@@ -53,7 +55,7 @@ After installation and configuration, the Tibber P1 Meter integration will creat
 If you encounter any issues:
 1. Check the Home Assistant logs for any error messages related to the Tibber P1 Meter integration.
 2. Ensure your Tibber API access token is correct and has the necessary permissions.
-3. Verify that your ESP8266 device is correctly set up and communicating with your MQTT broker.
+3. Verify that your P1 meter is correctly set up and communicating with your MQTT broker.
 
 For more detailed troubleshooting steps, please refer to our [Troubleshooting Guide](https://github.com/hkhard/TibberP1Integration/wiki/Troubleshooting) in the wiki.
 
