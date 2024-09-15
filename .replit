@@ -19,6 +19,14 @@ args = "Start Home Assistant"
 task = "workflow.run"
 args = "Publish to GitHub"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Check GitHub Publish Status"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Check GitHub Token and Push"
+
 [[workflows.workflow]]
 name = "Start Home Assistant"
 author = "agent"
@@ -46,6 +54,42 @@ git remote set-url origin https://${GITHUB_TOKEN}@github.com/hkhard/TibberP1Inte
 git add .
 git commit -m \"Initial commit: Add project files\"
 git push -u origin main
+"""
+
+[[workflows.workflow]]
+name = "Check GitHub Publish Status"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git status && git log -1"
+
+[[workflows.workflow]]
+name = "Check GitHub Token and Push"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+echo \"Checking GitHub token...\"
+if [ -n \"$GITHUB_TOKEN\" ]; then
+  echo \"GitHub token is set\"
+  git config --global user.email \"tibber.p1.integration@example.com\"
+  git config --global user.name \"Tibber P1 Integration\"
+  git remote set-url origin https://${GITHUB_TOKEN}@github.com/hkhard/TibberP1Integration.git
+  git add .
+  git commit -m \"Initial commit: Add project files\"
+  git push -u origin main
+else
+  echo \"GitHub token is not set\"
+fi
 """
 
 [deployment]
