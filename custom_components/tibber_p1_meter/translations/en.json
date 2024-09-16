@@ -8,6 +8,13 @@
                 "description": "Please enter your Tibber API Access Token.",
                 "title": "Tibber P1 Meter Setup"
             },
+            "select_p1_meter": {
+                "data": {
+                    "p1_meter_entity": "P1 Meter Entity"
+                },
+                "description": "Select the P1 meter entity to use for this integration.",
+                "title": "Select P1 Meter Entity"
+            },
             "select_entities": {
                 "data": {
                     "energy_consumption": "Energy Consumption Sensor",
