@@ -7,7 +7,7 @@ from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import EntitySelector, EntitySelectorConfig
-from homeassistant.helpers.entity_registry import async_get_registry
+from homeassistant.helpers.entity_registry import async_get_entity_registry
 import aiohttp
 
 from .const import DOMAIN, CONF_ENERGY_CONSUMPTION, CONF_CURRENT_POWER, CONF_ENERGY_PRODUCTION, CONF_CURRENT_POWER_PRODUCTION, CONF_P1_METER_ENTITY
@@ -52,7 +52,7 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return await self.async_step_select_entities()
 
         # Get all sensor entities
-        entity_registry = await async_get_registry(self.hass)
+        entity_registry = await async_get_entity_registry(self.hass)
         sensor_entities = [
             entity_id for entity_id, entry in entity_registry.entities.items()
             if entry.domain == "sensor"
@@ -61,7 +61,9 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="select_p1_meter",
             data_schema=vol.Schema({
-                vol.Required(CONF_P1_METER_ENTITY): vol.In(sensor_entities)
+                vol.Required(CONF_P1_METER_ENTITY): EntitySelector(
+                    EntitySelectorConfig(domain="sensor", multiple=False)
+                )
             }),
             errors=errors,
         )
@@ -81,10 +83,18 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="select_entities",
             data_schema=vol.Schema({
-                vol.Required(CONF_ENERGY_CONSUMPTION): vol.In(available_entities),
-                vol.Required(CONF_CURRENT_POWER): vol.In(available_entities),
-                vol.Optional(CONF_ENERGY_PRODUCTION): vol.In(available_entities),
-                vol.Optional(CONF_CURRENT_POWER_PRODUCTION): vol.In(available_entities),
+                vol.Required(CONF_ENERGY_CONSUMPTION): EntitySelector(
+                    EntitySelectorConfig(include_entities=available_entities, multiple=False)
+                ),
+                vol.Required(CONF_CURRENT_POWER): EntitySelector(
+                    EntitySelectorConfig(include_entities=available_entities, multiple=False)
+                ),
+                vol.Optional(CONF_ENERGY_PRODUCTION): EntitySelector(
+                    EntitySelectorConfig(include_entities=available_entities, multiple=False)
+                ),
+                vol.Optional(CONF_CURRENT_POWER_PRODUCTION): EntitySelector(
+                    EntitySelectorConfig(include_entities=available_entities, multiple=False)
+                ),
             }),
             errors=errors,
         )
@@ -99,7 +109,7 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _get_available_entities(self, p1_meter_entity: str) -> list[str]:
         """Get available entities from the selected P1 meter."""
-        entity_registry = await async_get_registry(self.hass)
+        entity_registry = await async_get_entity_registry(self.hass)
         device_id = entity_registry.async_get(p1_meter_entity).device_id
 
         if device_id is None:
