@@ -1,0 +1,31 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "access_token": "Tibber API Access Token"
+                },
+                "description": "Please enter your Tibber API Access Token.",
+                "title": "Tibber P1 Meter Setup"
+            },
+            "select_entities": {
+                "data": {
+                    "energy_consumption": "Energy Consumption Sensor",
+                    "current_power": "Current Power Sensor",
+                    "energy_production": "Energy Production Sensor (optional)",
+                    "current_power_production": "Current Power Production Sensor (optional)"
+                },
+                "description": "Select the sensors for P1 meter data.",
+                "title": "Select P1 Meter Sensors"
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "abort": {
+            "already_configured": "Device is already configured"
+        }
+    }
+}
