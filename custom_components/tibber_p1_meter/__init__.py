@@ -73,23 +73,29 @@ class TibberP1MeterCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data from P1 meter and update Tibber."""
         try:
-            # TODO: Implement actual P1 meter data fetching
-            # For now, we'll use dummy data
-            p1_data = await self.hass.async_add_executor_job(self._fetch_p1_meter_data)
+            p1_data = await self._fetch_p1_meter_data()
             
             await self.tibber_connection.send_rt_update(self.home_id, p1_data)
             return p1_data
         except Exception as err:
             raise UpdateFailed(f"Error communicating with P1 meter or Tibber API: {err}")
 
-    def _fetch_p1_meter_data(self):
-        """Fetch data from P1 meter (dummy implementation)."""
-        # TODO: Replace this with actual P1 meter data fetching
-        return {
-            "power": 1000,
-            "powerProduction": 0,
-            "accumulatedConsumption": 5000,
-            "accumulatedProduction": 0,
-            "accumulatedCost": 10,
-            "currency": "EUR"
-        }
+    async def _fetch_p1_meter_data(self):
+        """Fetch data from P1 meter using Home Assistant energy sensors."""
+        try:
+            energy_consumption = await self.hass.states.async_get("sensor.energy_consumption_kwh")
+            current_power = await self.hass.states.async_get("sensor.current_power_w")
+            energy_production = await self.hass.states.async_get("sensor.energy_production_kwh")
+            current_power_production = await self.hass.states.async_get("sensor.current_power_production_w")
+
+            return {
+                "power": float(current_power.state) if current_power else 0,
+                "powerProduction": float(current_power_production.state) if current_power_production else 0,
+                "accumulatedConsumption": float(energy_consumption.state) if energy_consumption else 0,
+                "accumulatedProduction": float(energy_production.state) if energy_production else 0,
+                "accumulatedCost": 0,  # This information is not available from energy sensors
+                "currency": "EUR"
+            }
+        except Exception as err:
+            _LOGGER.error("Error fetching P1 meter data from Home Assistant: %s", err)
+            raise
