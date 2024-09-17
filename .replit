@@ -43,6 +43,10 @@ args = "Push to GitHub"
 task = "workflow.run"
 args = "Push HACS changes"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Check GitHub Repository"
+
 [[workflows.workflow]]
 name = "Start Home Assistant"
 author = "agent"
@@ -185,6 +189,27 @@ git config --global user.name \"Tibber P1 Integration\"
 git add .
 git commit -m \"Update README.md with HACS badge and improve hacs.json\"
 git push origin main
+"""
+
+[[workflows.workflow]]
+name = "Check GitHub Repository"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+echo \"Checking GitHub repository structure and files...\"
+ls -R
+echo \"Checking hacs.json content...\"
+cat hacs.json
+echo \"Checking manifest.json content...\"
+cat custom_components/tibber_p1_meter/manifest.json
+echo \"Checking README.md content...\"
+cat README.md
 """
 
 [deployment]
