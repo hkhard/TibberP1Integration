@@ -1,10 +1,12 @@
 # Tibber P1 Meter Integration for Home Assistant
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+
 This custom component integrates a P1 meter with Tibber API via Home Assistant.
 
 ## Installation
 
-### Option 1: HACS (Recommended)
+### HACS (Recommended)
 
 1. Ensure you have [HACS](https://hacs.xyz/) installed in your Home Assistant instance.
 2. In the HACS panel, go to "Integrations".
@@ -12,7 +14,16 @@ This custom component integrates a P1 meter with Tibber API via Home Assistant.
 4. Click "Install" on the Tibber P1 Meter integration.
 5. Restart Home Assistant.
 
-### Option 2: Manual Installation
+If you can't find the integration in HACS, you can add it as a custom repository:
+
+1. In HACS, go to "Integrations".
+2. Click on the three dots in the top right corner and select "Custom repositories".
+3. Add the URL of this repository: `https://github.com/hkhard/TibberP1Integration`
+4. Select "Integration" as the category.
+5. Click "ADD".
+6. The integration should now appear in the list of available integrations to install.
+
+### Manual Installation
 
 1. Download the `tibber_p1_meter` folder from this repository.
 2. Copy the folder to your `custom_components` directory in your Home Assistant configuration directory.

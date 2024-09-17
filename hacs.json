@@ -3,5 +3,7 @@
   "render_readme": true,
   "domains": ["sensor"],
   "iot_class": "Cloud Push",
-  "homeassistant": "2023.3.0"
+  "homeassistant": "2023.3.0",
+  "zip_release": true,
+  "filename": "tibber_p1_meter.zip"
 }

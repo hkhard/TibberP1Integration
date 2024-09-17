@@ -183,7 +183,7 @@ args = """
 git config --global user.email \"tibber.p1.integration@example.com\"
 git config --global user.name \"Tibber P1 Integration\"
 git add .
-git commit -m \"Make repository HACS compatible\"
+git commit -m \"Update README.md with HACS badge and improve hacs.json\"
 git push origin main
 """
 
