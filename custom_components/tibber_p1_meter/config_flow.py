@@ -36,11 +36,11 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.data[CONF_ACCESS_TOKEN] = user_input[CONF_ACCESS_TOKEN]
                 _LOGGER.debug("Tibber API access token validated successfully")
                 return await self.async_step_select_p1_meter()
-            except aiohttp.ClientError:
-                _LOGGER.error("Failed to connect to Tibber API")
+            except aiohttp.ClientError as err:
+                _LOGGER.error("Failed to connect to Tibber API: %s", err)
                 errors["base"] = "cannot_connect"
-            except ValueError:
-                _LOGGER.error("Invalid Tibber API access token")
+            except ValueError as err:
+                _LOGGER.error("Invalid Tibber API access token: %s", err)
                 errors["base"] = "invalid_auth"
             except Exception as err:  # pylint: disable=broad-except
                 _LOGGER.exception("Unexpected error during Tibber API validation: %s", err)
@@ -122,7 +122,7 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         async with session.get("https://api.tibber.com/v1-beta/gql", headers=headers) as resp:
             if resp.status != 200:
                 _LOGGER.error("Invalid Tibber API authentication. Status code: %d", resp.status)
-                raise ValueError("Invalid authentication")
+                raise ValueError(f"Invalid authentication. Status code: {resp.status}")
         _LOGGER.debug("Tibber API access token validated successfully")
 
     async def _get_available_entities(self, p1_meter_entity: str) -> list[str]:
