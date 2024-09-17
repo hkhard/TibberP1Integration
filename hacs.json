@@ -4,5 +4,5 @@
   "domains": ["sensor"],
   "iot_class": "Cloud Push",
   "homeassistant": "2023.3.0",
-  "release_tag": "39f8d60"
+  "release_tag": "d4796f1"
 }
