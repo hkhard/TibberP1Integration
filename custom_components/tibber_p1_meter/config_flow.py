@@ -24,6 +24,11 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Initialize the config flow."""
         self.data = {}
 
+    def _reset_flow(self):
+        """Reset the flow."""
+        self.data = {}
+        return self.async_step_user()
+
     async def async_step_user(self, user_input: dict[str, str] | None = None) -> FlowResult:
         """Handle the initial step."""
         _LOGGER.debug("Starting Tibber P1 Meter config flow")
@@ -44,7 +49,7 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except Exception as err:  # pylint: disable=broad-except
                 _LOGGER.exception("Unexpected error during Tibber API validation: %s", err)
-                errors["base"] = "unknown"
+                return self._reset_flow()
 
         return self.async_show_form(
             step_id="user",
@@ -54,6 +59,10 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_select_p1_meter(self, user_input: dict[str, str] | None = None) -> FlowResult:
         """Handle the P1 meter selection step."""
+        if CONF_ACCESS_TOKEN not in self.data:
+            _LOGGER.warning("Access token missing, resetting flow")
+            return self._reset_flow()
+
         _LOGGER.debug("Starting P1 meter selection step")
         errors = {}
 
@@ -82,13 +91,21 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_select_entities(self, user_input: dict[str, str] | None = None) -> FlowResult:
         """Handle the entity selection step."""
+        if CONF_ACCESS_TOKEN not in self.data or CONF_P1_METER_ENTITY not in self.data:
+            _LOGGER.warning("Missing required data, resetting flow")
+            return self._reset_flow()
+
         _LOGGER.debug("Starting entity selection step")
         errors = {}
 
         if user_input is not None:
             self.data.update(user_input)
             _LOGGER.debug("Selected entities: %s", user_input)
-            return self.async_create_entry(title="Tibber P1 Meter", data=self.data)
+            if all(key in self.data for key in [CONF_ACCESS_TOKEN, CONF_P1_METER_ENTITY, CONF_ENERGY_CONSUMPTION, CONF_CURRENT_POWER]):
+                return self.async_create_entry(title="Tibber P1 Meter", data=self.data)
+            else:
+                _LOGGER.warning("Missing required configuration data, resetting flow")
+                return self._reset_flow()
 
         # Get the available entities from the selected P1 meter
         p1_meter_entity = self.data[CONF_P1_METER_ENTITY]
