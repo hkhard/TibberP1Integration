@@ -51,6 +51,10 @@ args = "Check GitHub Repository"
 task = "workflow.run"
 args = "Check HACS Compatibility"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Push Updated Config Flow"
+
 [[workflows.workflow]]
 name = "Start Home Assistant"
 author = "agent"
@@ -238,6 +242,24 @@ Checking manifest.json content...\"
     echo \"
 Checking README.md content...\"
     cat README.md
+    """
+
+[[workflows.workflow]]
+name = "Push Updated Config Flow"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+    git config --global user.email \"tibber.p1.integration@example.com\"
+    git config --global user.name \"Tibber P1 Integration\"
+    git add custom_components/tibber_p1_meter/config_flow.py
+    git commit -m \"Update config_flow.py: Improve error handling and flow reset\"
+    git push origin main
     """
 
 [deployment]
