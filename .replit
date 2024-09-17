@@ -47,6 +47,10 @@ args = "Push HACS changes"
 task = "workflow.run"
 args = "Check GitHub Repository"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Check HACS Compatibility"
+
 [[workflows.workflow]]
 name = "Start Home Assistant"
 author = "agent"
@@ -211,6 +215,30 @@ cat custom_components/tibber_p1_meter/manifest.json
 echo \"Checking README.md content...\"
 cat README.md
 """
+
+[[workflows.workflow]]
+name = "Check HACS Compatibility"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+
+    echo \"Checking repository structure...\"
+    ls -R
+    echo \"
+Checking hacs.json content...\"
+    cat hacs.json
+    echo \"
+Checking manifest.json content...\"
+    cat custom_components/tibber_p1_meter/manifest.json
+    echo \"
+Checking README.md content...\"
+    cat README.md
+    """
 
 [deployment]
 run = ["sh", "-c", "hass -c . --debug"]
