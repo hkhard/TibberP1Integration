@@ -27,11 +27,13 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def _reset_flow(self):
         """Reset the flow."""
         self.data = {}
+        _LOGGER.debug("Returning from async_step_user")
         return self.async_step_user()
 
     async def async_step_user(self, user_input: dict[str, str] | None = None) -> FlowResult:
         """Handle the initial step."""
         _LOGGER.debug("Starting Tibber P1 Meter config flow")
+        _LOGGER.debug(f"async_step_select_p1_meter called. self.data: {self.data}")
         errors = {}
 
         if user_input is not None:
@@ -39,6 +41,7 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.debug("Validating Tibber API access token")
                 await self._validate_input(user_input[CONF_ACCESS_TOKEN])
                 self.data[CONF_ACCESS_TOKEN] = user_input[CONF_ACCESS_TOKEN]
+                _LOGGER.debug(f"Stored access token: {self.data[CONF_ACCESS_TOKEN]}")
                 _LOGGER.debug("Tibber API access token validated successfully")
                 return await self.async_step_select_p1_meter()
             except aiohttp.ClientError as err:
@@ -78,6 +81,7 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if entry.domain == "sensor"
         ]
         _LOGGER.debug("Found %d sensor entities", len(sensor_entities))
+        _LOGGER.debug(f"Found sensor entities: {sensor_entities}")
 
         return self.async_show_form(
             step_id="select_p1_meter",
@@ -85,7 +89,8 @@ class TibberP1MeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_P1_METER_ENTITY): EntitySelector(
                     EntitySelectorConfig(domain="sensor", multiple=False)
                 )
-            }),
+            })
+            _LOGGER.debug("Showing P1 meter selection form"),
             errors=errors,
         )
 
