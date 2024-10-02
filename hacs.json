@@ -1,6 +1,7 @@
 {
   "name": "Tibber P1 Meter",
   "render_readme": true,
+  "zip_release": false,
   "domains": ["sensor"],
   "iot_class": "Cloud Push",
   "homeassistant": "2023.3.0"
